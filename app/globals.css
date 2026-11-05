@@ -82,3 +82,8 @@ table { width:100%; border-collapse:collapse; font-size:14px; } th { color:var(-
 .vazio { text-align:center; color:var(--cinza); font-size:14px; padding:24px 0; margin:0; border-top:1px solid var(--borda); }
 @media (min-width:760px){ .filtros-box .filtros { grid-template-columns:2fr 1fr 1fr 1fr auto; align-items:end; } .filtros .f-full { grid-column:auto; } }
 .cab .chips { margin:0; padding:0; }
+
+/* iOS Safari: campo de data vazando */
+input[type=date] { -webkit-appearance:none; appearance:none; display:block; min-width:0; max-width:100%; min-height:52px; line-height:1.4; }
+input[type=date]::-webkit-date-and-time-value { text-align:left; margin:0; }
+input[type=date]::-webkit-datetime-edit { padding:0; }
