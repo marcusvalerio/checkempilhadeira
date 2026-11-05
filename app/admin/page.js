@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin · Checklists" };
 
 export default async function Admin({ searchParams }) {
-  if (!(await isAdmin())) return (<><header className="topo"><h1>Admin · Checklist de Empilhadeira</h1></header><Login /></>);
+  if (!(await isAdmin())) return (<><header className="cab"><div><small>Admin</small><h1>Checklist de empilhadeira</h1></div></header><Login /></>);
   const p = await searchParams;
   const emp = p.empilhadeira || null, de = p.de || null, ate = p.ate || null, res = p.resultado || null;
   const rows = await sql()`
@@ -19,28 +19,36 @@ export default async function Admin({ searchParams }) {
   const reprov = rows.filter((r) => r.resultado === "REPROVADA").length;
   const qs = new URLSearchParams(Object.entries({ empilhadeira: emp, de, ate, resultado: res }).filter(([, v]) => v)).toString();
   const fmt = (d) => new Date(d).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" });
+  const filtrando = Boolean(emp || de || ate || res);
   return (<>
-    <header className="topo noprint"><h1>Admin · Checklists</h1>
-      <div className="links" style={{ marginTop: 6 }}><a href="/admin/qrcode">QR Codes</a><a href={`/api/checkins?formato=csv&${qs}`}>Exportar CSV</a><a href="/" target="_blank">Formulário</a><Sair /></div></header>
+    <header className="cab noprint"><div><small>Admin</small><h1>Checklists</h1></div><nav className="chips"><Sair /></nav></header>
     <main className="wide">
-      <form className="card filtros">
-        <div><label className="campo">Empilhadeira</label><input name="empilhadeira" defaultValue={emp || ""} /></div>
-        <div><label className="campo">De</label><input type="date" name="de" defaultValue={de || ""} /></div>
-        <div><label className="campo">Até</label><input type="date" name="ate" defaultValue={ate || ""} /></div>
-        <div><label className="campo">Resultado</label><select name="resultado" defaultValue={res || ""}><option value="">Todos</option><option>APROVADA</option><option>REPROVADA</option></select></div>
-        <button className="btn">Filtrar</button>
-      </form>
+      <nav className="chips noprint"><a href="/admin/qrcode">QR Codes</a><a href={`/api/checkins?formato=csv&${qs}`}>Exportar CSV</a><a href="/" target="_blank">Formulário</a></nav>
       <div className="stats">
-        <div className="card"><b>{rows.length}</b>Checklists</div>
+        <div className="card"><b>{rows.length}</b>Total</div>
         <div className="card"><b style={{ color: "var(--ok)" }}>{rows.length - reprov}</b>Aprovadas</div>
         <div className="card"><b style={{ color: "var(--nok)" }}>{reprov}</b>Reprovadas</div>
       </div>
-      <div className="card tabela-wrap"><table>
-        <thead><tr><th>#</th><th>Data/hora</th><th>Empilhadeira</th><th>Operador</th><th>Turno</th><th>Itens Não OK</th><th>Resultado</th></tr></thead>
-        <tbody>{rows.map((r) => { const nok = ITENS.filter((i) => r.itens[i.id] === "nok").length; return (
-          <tr key={r.id}><td><a href={`/admin/${r.id}`}>{r.id}</a></td><td>{fmt(r.inspecao_em)}</td><td>{r.empilhadeira}</td><td>{r.operador}</td><td>{r.turno}</td>
-            <td style={{ color: nok ? "var(--nok)" : undefined, fontWeight: nok ? 700 : 400 }}>{nok}</td><td><a href={`/admin/${r.id}`}><span className={`tag ${r.resultado}`}>{r.resultado}</span></a></td></tr>); })}
-          {!rows.length && <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--cinza)" }}>Nenhum checklist encontrado.</td></tr>}</tbody>
-      </table></div>
+      <details className="card filtros-box" open={filtrando}>
+        <summary>Filtros{filtrando ? " · ativos" : ""}</summary>
+        <form className="filtros">
+          <div className="f-full"><label className="campo">Empilhadeira</label><input name="empilhadeira" defaultValue={emp || ""} placeholder="Ex.: EMP-01" /></div>
+          <div><label className="campo">De</label><input type="date" name="de" defaultValue={de || ""} /></div>
+          <div><label className="campo">Até</label><input type="date" name="ate" defaultValue={ate || ""} /></div>
+          <div className="f-full"><label className="campo">Resultado</label><select name="resultado" defaultValue={res || ""}><option value="">Todos</option><option>APROVADA</option><option>REPROVADA</option></select></div>
+          <button className="btn f-full">Aplicar filtros</button>
+          {filtrando && <a className="limpar f-full" href="/admin">Limpar filtros</a>}
+        </form>
+      </details>
+      <section className="card lista">
+        <div className="sec-tit"><h2>Inspeções</h2><span>{rows.length}</span></div>
+        {rows.map((r) => { const nok = ITENS.filter((i) => r.itens[i.id] === "nok").length; return (
+          <a className="linha" key={r.id} href={`/admin/${r.id}`}>
+            <div className="l-main"><b>{r.empilhadeira}</b><small>{r.operador} · {r.turno}</small><small>{fmt(r.inspecao_em)} · nº {r.id}</small></div>
+            <div className="l-dir"><span className={`tag ${r.resultado}`}>{r.resultado === "APROVADA" ? "Aprovada" : "Reprovada"}</span>
+              {nok > 0 && <small style={{ color: "var(--nok)" }}>{nok} item{nok > 1 ? "s" : ""} não OK</small>}</div>
+          </a>); })}
+        {!rows.length && <p className="vazio">Nenhum checklist encontrado.</p>}
+      </section>
     </main></>);
 }

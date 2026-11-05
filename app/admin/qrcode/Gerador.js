@@ -13,11 +13,12 @@ export default function Gerador() {
     })).then(setQrs);
   }, [ids]);
   return (<main className="wide">
+    <nav className="chips noprint"><a href="/admin">← Voltar</a></nav>
     <div className="card noprint"><h2>Empilhadeiras</h2>
       <p style={{ fontSize: 14, marginTop: 0 }}>Um ID por linha. Cada QR já abre o checklist com a empilhadeira preenchida. Imprima e cole na máquina.</p>
       <textarea value={ids} onChange={(e) => setIds(e.target.value)} rows={5} />
       <button className="btn" style={{ marginTop: 10 }} onClick={() => print()}>Imprimir QR Codes</button></div>
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 24 }}>
       {qrs.map((q) => (<div className="card" key={q.url} style={{ textAlign: "center", breakInside: "avoid" }}>
         <b style={{ fontSize: 18 }}>{q.id || "Geral (qualquer empilhadeira)"}</b>
         <div dangerouslySetInnerHTML={{ __html: q.svg }} style={{ margin: "8px auto", width: 220 }} />

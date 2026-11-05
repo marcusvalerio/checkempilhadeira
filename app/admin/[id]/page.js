@@ -12,9 +12,10 @@ export default async function Detalhe({ params }) {
   const [c] = await sql()`SELECT * FROM checkins WHERE id = ${Number(id)}`;
   if (!c) notFound();
   return (<>
-    <header className="topo"><h1>Checklist nº {c.id}</h1><div className="links noprint" style={{ marginTop: 6 }}><a href="/admin">← Voltar</a><a href="#" id="imp">Imprimir</a></div></header>
+    <header className="cab"><div><small>Checklist nº {c.id}</small><h1>{c.empilhadeira}</h1></div><span className={`tag ${c.resultado}`}>{c.resultado}</span></header>
     <script dangerouslySetInnerHTML={{ __html: "document.getElementById('imp').onclick=function(e){e.preventDefault();print()}" }} />
     <main>
+      <nav className="chips noprint"><a href="/admin">← Voltar</a><a href="#" id="imp">Imprimir</a></nav>
       <section className="card"><h2>1. Identificação</h2>
         <p>Data: <b>{new Date(c.data).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</b><br />Turno: <b>{c.turno}</b><br />Operador: <b>{c.operador}</b><br />Empilhadeira: <b>{c.empilhadeira}</b></p></section>
       <section className="card"><h2>2. Inspeção visual</h2>
