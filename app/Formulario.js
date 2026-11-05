@@ -64,7 +64,7 @@ export default function Formulario() {
   }
 
   if (feito) return (
-    <><header className="topo"><h1>Checklist de Empilhadeira</h1></header>
+    <><header className="cab"><div><small>Inspeção pré-operacional</small><h1>Checklist diário</h1></div></header>
     <main><div className="card sucesso">
       <div className="ico">{feito.resultado === "APROVADA" ? "✅" : "⛔"}</div>
       <h2>Checklist nº {feito.id} enviado!</h2>
@@ -76,10 +76,9 @@ export default function Formulario() {
 
   return (
     <>
-      <header className="topo">
-        <h1>Checklist Diário de Empilhadeira</h1>
-        <p>Inspeção pré-operacional · {respondidos}/{ITENS.length} itens</p>
-        <div className="barra"><div style={{ width: progresso + "%" }} /></div>
+      <header className="cab">
+        <div><small>Inspeção pré-operacional</small><h1>Checklist diário</h1></div>
+        <div className="anel" style={{ "--p": progresso }}><span>{respondidos}/{ITENS.length}</span></div>
       </header>
       <main>
         <section className="card">
@@ -94,21 +93,21 @@ export default function Formulario() {
 
         {SECOES.map((s) => (
           <section className="card" key={s.titulo}>
-            <h2>{s.titulo}</h2>
+            <div className="sec-tit"><h2>{s.titulo}</h2><span>{s.itens.filter((i) => itens[i.id]).length}/{s.itens.length}</span></div>
+            <div className="grade">
             {s.itens.map((it) => (
-              <div className="item" key={it.id} id={"it-" + it.id}>
-                <img src={imagem(it.id)} alt={it.label} />
-                <div className="txt">
-                  <b>{it.label}</b>{it.dica && <small>{it.dica}</small>}
-                  <div className="opcoes">
-                    {[["ok", "✓ OK"], ["nok", "✗ Não OK"], ...(it.na ? [["na", "N/A"]] : [])].map(([v, l]) => (
+              <div className={`tile ${itens[it.id] || ""}`} key={it.id} id={"it-" + it.id}>
+                <img src={imagem(it.id)} alt="" />
+                <b>{it.label}</b>
+                <div className="opcoes mini">
+                    {[["ok", "OK"], ["nok", "Não OK"], ...(it.na ? [["na", "N/A"]] : [])].map(([v, l]) => (
                       <button key={v} type="button" className={`op ${v} ${itens[it.id] === v ? "sel" : ""}`}
                         onClick={() => setItens((x) => ({ ...x, [it.id]: v }))}>{l}</button>
                     ))}
-                  </div>
                 </div>
               </div>
             ))}
+            </div>
           </section>
         ))}
 
@@ -139,7 +138,7 @@ export default function Formulario() {
           <p style={{ margin: "0 0 8px", fontSize: 14 }}>Operador: <b>{f.operador || "—"}</b></p>
           <label className="campo">Assinatura (desenhe com o dedo)</label>
           <canvas ref={canvas} className="assin" />
-          <button type="button" className="btn sec" style={{ marginTop: 8 }} onClick={limpar}>Limpar assinatura</button>
+          <button type="button" className="btn sec" style={{ marginTop: 12 }} onClick={limpar}>Limpar assinatura</button>
           <p style={{ fontSize: 12, color: "var(--cinza)" }}>A data e o horário da inspeção são registrados automaticamente no envio.</p>
         </section>
 
@@ -154,8 +153,10 @@ export default function Formulario() {
         </section>
       </main>
       <div className="fixo">
-        <div>{erro && <div className="erro">{erro}</div>}
-          <button className="btn" disabled={enviando} onClick={enviar}>{enviando ? "Enviando…" : "Enviar checklist"}</button></div>
+        {erro && <div className="erro">{erro}</div>}
+        <button className="btn pilula" disabled={enviando} onClick={enviar}>
+          <span className="pb"><span style={{ width: progresso + "%" }} /></span>
+          {enviando ? "Enviando…" : "Enviar checklist"}</button>
       </div>
     </>
   );
