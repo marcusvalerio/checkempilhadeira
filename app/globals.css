@@ -87,3 +87,8 @@ table { width:100%; border-collapse:collapse; font-size:14px; } th { color:var(-
 input[type=date] { -webkit-appearance:none; appearance:none; display:block; min-width:0; max-width:100%; min-height:52px; line-height:1.4; }
 input[type=date]::-webkit-date-and-time-value { text-align:left; margin:0; }
 input[type=date]::-webkit-datetime-edit { padding:0; }
+.qr-grade { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:var(--s); }
+.qr-card { text-align:center; break-inside:avoid; display:flex; flex-direction:column; gap:12px; align-items:center; }
+.qr-card b { font-size:18px; } .qr-card small { color:var(--cinza); font-size:12px; }
+.qr-img { width:200px; } .qr-img svg { width:100%; height:auto; display:block; }
+.qr-card .btn { padding:12px; font-size:14px; border-radius:var(--r-sm); }
